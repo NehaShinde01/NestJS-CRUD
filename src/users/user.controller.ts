@@ -1,34 +1,35 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseFilters } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user';
+import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
-/**
- * 
- * @returns all users
- */
+  /**
+   * 
+   * @returns all users
+   */
   @Get()
-  getUsers(): User[] {
+  getUsers(): Promise<User[]> {
     return this.userService.getUsers();
   }
-/**
- * 
- * @param userDetails get user details from end user
- * @returns 
- */
+  /**
+   * 
+   * @param userDetails get user details from end user
+   * @returns 
+   */
   @Post()
-  createUser(@Body() userDetails: Partial<User>): User {
+  createUser(@Body() userDetails: Partial<User>): Promise<InsertResult> {
     return this.userService.createUser(userDetails);
   }
-/**
- * 
- * @param id get perticular user by id 
- * @returns 
- */
+  /**
+   * 
+   * @param id get perticular user by id 
+   * @returns 
+   */
   @Get(':id')
-  getUser(@Param('id') id: number): User {
+  getUser(@Param('id') id: number): Promise<User> {
     return this.userService.getUser(id);
   }
 
@@ -39,7 +40,7 @@ export class UserController {
    * @returns 
    */
   @Patch(':id')
-  updateUser(@Param('id') id: number, @Body() userDetails: Partial<User>): User {
+  updateUser(@Param('id') id: number, @Body() userDetails: Partial<User>): Promise<UpdateResult> {
     return this.userService.updateUser(id, userDetails);
   }
 
@@ -49,7 +50,7 @@ export class UserController {
    * @returns 
    */
   @Delete(':id')
-  deleteUser(@Param('id') id: number): boolean {
+  deleteUser(@Param('id') id: number): Promise<DeleteResult> {
     return this.userService.deleteUser(id);
   }
 
@@ -59,7 +60,7 @@ export class UserController {
    * @returns 
    */
   @Get('search/:query')
-  searchUser(@Param('query') query: string): User[] {
+  searchUser(@Param('query') query: string): Promise<User[]> {
     return this.userService.searchUser(query);
   }
 }
