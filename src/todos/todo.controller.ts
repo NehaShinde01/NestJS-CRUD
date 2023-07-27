@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseFilters } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { Todo } from './todo';
+import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 
 @Controller('todos')
 export class TodoController {
@@ -11,7 +12,7 @@ export class TodoController {
    * @returns get all todos
    */
   @Get()
-  getTodos(): Todo[] {
+  getTodos(): Promise<Todo[]> {
     return this.todoService.getTodos();
   }
 
@@ -21,7 +22,7 @@ export class TodoController {
    * @returns details
    */
   @Post()
-  createTodo(@Body() todoDetails: Partial<Todo> ): Todo{
+  createTodo(@Body() todoDetails: Partial<Todo> ): Promise<InsertResult>{
     return this.todoService.createTodo(todoDetails);
   }
 
@@ -31,7 +32,7 @@ export class TodoController {
    * @returns 
    */
   @Get(':id')
-  getTodo(@Param('id') id:number) :Todo{
+  getTodo(@Param('id') id:number) : Promise<Todo>{
     return this.todoService.getTodo(id);
   }
 
@@ -42,7 +43,7 @@ export class TodoController {
    * @returns updated details
    */
   @Patch(':id')
-  updateTodo(@Param('id') id:number, @Body() todoDetails: Partial<Todo>) :Todo{
+  updateTodo(@Param('id') id:number, @Body() todoDetails: Partial<Todo>) :Promise<UpdateResult>{
     return this.todoService.updateTodo(id,todoDetails);
   }
 
@@ -53,7 +54,7 @@ export class TodoController {
    */
 
   @Delete(':id')
-  deleteTodo(@Param('id') id:number): boolean{
+  deleteTodo(@Param('id') id:number): Promise<DeleteResult>{
     return this.todoService.deleteTodo(id);
   }
 
@@ -63,8 +64,11 @@ export class TodoController {
    * @returns search result
    */
   @Get('search/:query')
-  searchTodo(@Param('query') query: string): Todo[] {
+  searchTodo(@Param('query') query: string): Promise<Todo[]> {
     return this.todoService.searchTodo(query);
   }
+
+  
+
 }
 

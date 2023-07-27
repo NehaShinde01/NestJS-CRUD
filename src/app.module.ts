@@ -7,13 +7,15 @@ import { TodoController } from './todos/todo.controller';
 import { TodoService } from './todos/todo.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user';
+import { Todo } from './todos/todo';
+
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'nestjsdata',
-      entities: [User],
+      entities: [User,Todo],
       synchronize: true,
       logging:true,//it will show us what query is executed by typeorm
     }),

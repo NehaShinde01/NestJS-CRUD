@@ -1,31 +1,39 @@
 import { Get, Injectable, NotFoundException, Param } from '@nestjs/common';
 import { Todo } from './todo';
+import { DeleteResult, EntityManager, InsertResult, Like, UpdateResult } from 'typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
 
-const TODOS: Todo[] = [
-  {
-    id: 1,
-    note: "goto office"
-  },
-  {
-    id: 2,
-    note: "work from office"
-  },
-  {
-    id: 3,
-    note: "reached at thane"
-  },
+// const TODOS: Todo[] = [
+//   {
+//     id: 1,
+//     note: "goto office"
+//   },
+//   {
+//     id: 2,
+//     note: "work from office"
+//   },
+//   {
+//     id: 3,
+//     note: "reached at thane"
+//   },
 
-];
+// ];
 @Injectable()
 export class TodoService {
+
+  constructor(
+    @InjectEntityManager()
+    private _entityManager: EntityManager,//entityManager is private thats why we declaire it as _<name>
+  ) { }
+
 
 
   /**
    * 
    * @returns display all Todo Array values
    */
-  getTodos(): Todo[] {
-    return TODOS;
+  getTodos(): Promise<Todo[]> {
+    return this._entityManager.find(Todo);
   }
   /**
    * 
@@ -33,20 +41,15 @@ export class TodoService {
    * @returns 
    */
 
-createTodo(TodoDetails: Partial<Todo>): Todo{
-  const todo = <Todo>{
-    id: TODOS[TODOS.length - 1].id + 1,
-    ...TodoDetails,
-  };
-  TODOS.push(todo);
+createTodo(TodoDetails: Partial<Todo>): Promise<InsertResult>{
 
-  return todo;
+  return this._entityManager.insert(Todo, TodoDetails);
 }
   /**
    * get perticular todo item
    */
-  getTodo(id: number): Todo {
-    const todo = TODOS.find((todo) => todo.id == id);
+  getTodo(id: number): Promise<Todo> {
+    const todo = this._entityManager.findOne(Todo,{where:{id} });
     if(!todo)
     {
       throw new Error('Note not found');
@@ -54,21 +57,19 @@ createTodo(TodoDetails: Partial<Todo>): Todo{
     return todo;
   }
 
-  updateTodo(id: number, todoDetails: Partial<Todo>): Todo {
-    const index = TODOS.findIndex(todo => todo.id == id);
-    TODOS[index]={ ...TODOS[index],...todoDetails};
-    return TODOS[index];
+  updateTodo(id: number, todoDetails: Partial<Todo>): Promise<UpdateResult> {
+    return this._entityManager.update(Todo, {id},todoDetails)
+     
   }
 
-  searchTodo(query: string): Todo[] {
-    return TODOS.filter((todo)=> todo.id.toString().includes(query) ||
-    todo.note.includes(query));
+  searchTodo(query: string): Promise<Todo[]> {
+    return this._entityManager.find(Todo, {
+      where : { note:Like(`%${query}%`)}
+    })
   }
 
-  deleteTodo(id: number): boolean {
-    const index=TODOS.findIndex(todo => todo.id==id );
-    TODOS.splice(index,1);
-    return true;
+  deleteTodo(id: number): Promise<DeleteResult> {
+   return this._entityManager.delete(Todo, id);
   }
 
   
