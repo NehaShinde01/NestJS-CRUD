@@ -41,38 +41,37 @@ export class TodoService {
    * @returns 
    */
 
-createTodo(TodoDetails: Partial<Todo>): Promise<InsertResult>{
+  createTodo(TodoDetails: Partial<Todo>): Promise<InsertResult> {
 
-  return this._entityManager.insert(Todo, TodoDetails);
-}
+    return this._entityManager.insert(Todo, TodoDetails);
+  }
   /**
    * get perticular todo item
    */
   getTodo(id: number): Promise<Todo> {
-    const todo = this._entityManager.findOne(Todo,{where:{id} });
-    if(!todo)
-    {
+    const todo = this._entityManager.findOne(Todo, { where: { id }, relations: ['assignedTo'] });
+    if (!todo) {
       throw new Error('Note not found');
     }
     return todo;
   }
 
   updateTodo(id: number, todoDetails: Partial<Todo>): Promise<UpdateResult> {
-    return this._entityManager.update(Todo, {id},todoDetails)
-     
+    return this._entityManager.update(Todo, { id }, todoDetails)
+
   }
 
   searchTodo(query: string): Promise<Todo[]> {
     return this._entityManager.find(Todo, {
-      where : { note:Like(`%${query}%`)}
+      where: { note: Like(`%${query}%`) }
     })
   }
 
   deleteTodo(id: number): Promise<DeleteResult> {
-   return this._entityManager.delete(Todo, id);
+    return this._entityManager.delete(Todo, id);
   }
 
-  
+
 
 }
 

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Todo } from '../todos/todo';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -14,6 +15,8 @@ export class User {
   @Column()
   mobile: number;
 
+  @OneToMany(() => Todo, (todo) => todo.assignedTo)
+  assignedTodos: Todo[];
   // @Column({ default: true })
   // isActive: boolean;
 }

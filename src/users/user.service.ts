@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, InsertResult, Like, UpdateResult } from 'typeorm';
+import { todo } from 'node:test';
 
 // const USERS: User[] = [
 //   {
@@ -62,7 +63,7 @@ export class UserService {
    * @returns user
    */
   getUser(id: number): Promise<User> {
-    const user = this._entityManager.findOne(User, { where: { id } });
+    const user = this._entityManager.findOne(User, { where: { id }, relations: ['assignedTodos'] });
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -99,10 +100,10 @@ export class UserService {
     return this._entityManager.find(User, {
       where: [
         {
-          name:Like(`%${query}%`)
+          name: Like(`%${query}%`)
         },
         {
-          email:Like(`%${query}%`)
+          email: Like(`%${query}%`)
         }
       ]//[]square braces are used for OR condition and { } curly braces are used for AND conditions
     })
