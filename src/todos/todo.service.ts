@@ -33,7 +33,7 @@ export class TodoService {
    * @returns display all Todo Array values
    */
   getTodos(): Promise<Todo[]> {
-    return this._entityManager.find(Todo);
+    return this._entityManager.find(Todo, {relations: ['assignedTo']});
   }
   /**
    * 
